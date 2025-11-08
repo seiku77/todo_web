@@ -5,7 +5,7 @@ name: Deploy Flutter Web to GitHub Pages
 on:
   push:
     # mainブランチへのプッシュでのみ実行
-    branches: [ main ]
+    branches: [main]
   # 手動実行を可能にする
   workflow_dispatch:
 
@@ -27,8 +27,8 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           # 使用するFlutterのバージョンを指定
-          flutter-version: '3.x.x' # あなたが使っているバージョンに合わせて変更
-          channel: 'stable'
+          flutter-version: "3.35.6" # あなたが使っているバージョンに合わせて変更
+          channel: "stable"
 
       # 3. 依存関係の取得
       - name: Get Dependencies
