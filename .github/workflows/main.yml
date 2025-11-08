@@ -1,0 +1,52 @@
+# ワークフロー名
+name: Deploy Flutter Web to GitHub Pages
+
+# ワークフローが実行されるイベント（トリガー）
+on:
+  push:
+    # mainブランチへのプッシュでのみ実行
+    branches: [ main ]
+  # 手動実行を可能にする
+  workflow_dispatch:
+
+# 実行するジョブの定義
+jobs:
+  build_and_deploy:
+    # 実行する環境 (仮想マシン)
+    runs-on: ubuntu-latest
+
+    # ジョブ内のステップ
+    steps:
+      # 1. リポジトリのコードをチェックアウト
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Flutter環境のセットアップ
+      - name: Set up Flutter
+        # Flutterのセットアップ用アクションを使用
+        uses: subosito/flutter-action@v2
+        with:
+          # 使用するFlutterのバージョンを指定
+          flutter-version: '3.x.x' # あなたが使っているバージョンに合わせて変更
+          channel: 'stable'
+
+      # 3. 依存関係の取得
+      - name: Get Dependencies
+        run: flutter pub get
+
+      # 4. Webアプリのビルドを実行
+      # ※注意: GitHub Pagesのリポジトリ名に合わせたベースURL設定が重要
+      - name: Build Web App
+        run: flutter build web --web-renderer html --base-href /${{ github.event.repository.name }}/
+
+      # 5. GitHub Pagesへのデプロイ
+      - name: Deploy to GitHub Pages
+        # デプロイ用アクションを使用
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          # GitHub Actionsがリポジトリ操作に使う認証トークン
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # デプロイしたいビルド成果物のディレクトリ
+          publish_dir: ./build/web
+          # デプロイに使用するブランチ (通常 gh-pages を使用)
+          publish_branch: gh-pages
