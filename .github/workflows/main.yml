@@ -12,6 +12,8 @@ on:
 # 実行するジョブの定義
 jobs:
   build_and_deploy:
+    permissions:
+      contents: write
     # 実行する環境 (仮想マシン)
     runs-on: ubuntu-latest
 
