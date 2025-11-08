@@ -37,7 +37,7 @@ jobs:
       # 4. Webアプリのビルドを実行
       # ※注意: GitHub Pagesのリポジトリ名に合わせたベースURL設定が重要
       - name: Build Web App
-        run: flutter build web --web-renderer html --base-href /${{ github.event.repository.name }}/
+        run: flutter build web --base-href /${{ github.event.repository.name }}/
 
       # 5. GitHub Pagesへのデプロイ
       - name: Deploy to GitHub Pages
