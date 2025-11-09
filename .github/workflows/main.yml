@@ -5,7 +5,7 @@ name: Deploy Flutter Web to GitHub Pages
 on:
   push:
     # mainブランチへのプッシュでのみ実行
-    branches: [main]
+    branches: [master]
   # 手動実行を可能にする
   workflow_dispatch:
 
