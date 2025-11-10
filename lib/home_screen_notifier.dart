@@ -3,36 +3,47 @@ import 'package:todo_web/entity/todo.dart';
 import 'package:todo_web/todo_datasource.dart';
 
 final homeScreenNotifierProvider =
-    NotifierProvider<HomeScreenNotifier, List<Todo>>(HomeScreenNotifier.new);
+    AsyncNotifierProvider<HomeScreenNotifier, List<Todo>>(
+      HomeScreenNotifier.new,
+    );
 
-class HomeScreenNotifier extends Notifier<List<Todo>> {
+class HomeScreenNotifier extends AsyncNotifier<List<Todo>> {
   final _todoDataSource = TodoDataSource();
 
+  Future<void> _fetchAndSetState() async {
+    state = await AsyncValue.guard(() => _todoDataSource.getAllTodo());
+  }
+
   @override
-  List<Todo> build() {
-    return _todoDataSource.getAllTodo() ??
-        [Todo(title: "title", description: "description")];
+  Future<List<Todo>> build() async {
+    return await _todoDataSource.getAllTodo();
   }
 
   Future<void> addTodo(String title, String description) async {
-    await _todoDataSource.addTodo(title, description);
-    state = _todoDataSource.getAllTodo() ?? [];
+    state = AsyncValue.loading();
+    await AsyncValue.guard(() => _todoDataSource.addTodo(title, description));
+    _fetchAndSetState();
   }
 
   Future<void> deleteTodo(Todo todo) async {
-    await _todoDataSource.deleteTodo(todo);
-    state = _todoDataSource.getAllTodo() ?? [];
+    state = AsyncValue.loading();
+    await AsyncValue.guard(() => _todoDataSource.deleteTodo(todo));
+    _fetchAndSetState();
   }
 
   Future<void> updateTodo(Todo todo) async {
-    await _todoDataSource.updateTodo(todo);
-    state = _todoDataSource.getAllTodo() ?? [];
+    state = AsyncValue.loading();
+    await AsyncValue.guard(() => _todoDataSource.updateTodo(todo));
+    _fetchAndSetState();
   }
 
   Future<void> editTodo(Todo todo, String title, String description) async {
-    todo.title = title;
-    todo.description = description;
-    await todo.save();
-    state = _todoDataSource.getAllTodo() ?? [];
+    state = AsyncValue.loading();
+    await AsyncValue.guard(() {
+      todo.title = title;
+      todo.description = description;
+      return todo.save();
+    });
+    _fetchAndSetState();
   }
 }

@@ -14,35 +14,41 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Todo List')),
       body: Center(
-        child: ListView.builder(
-          itemCount: todos.length,
-          itemBuilder: (context, index) {
-            final todo = todos[index];
+        child: todos.when(
+          data: (todos) {
+            return ListView.builder(
+              itemCount: todos.length,
+              itemBuilder: (context, index) {
+                final todo = todos[index];
 
-            return ListTile(
-              onTap: () => showDialog(
-                context: context,
-                builder: (context) => UpsertTodoDialog(
-                  title: 'Edit Todo',
-                  submitButtonText: 'Save',
-                  initialTodo: todo,
-                  onSubmit: (title, description) {
-                    notifier.editTodo(todo, title, description);
-                  },
-                ),
-              ),
-              title: Text(todo.title),
-              subtitle: Text(todo.description),
-              leading: Checkbox(
-                value: todo.isDone,
-                onChanged: (value) => notifier.updateTodo(todo),
-              ),
-              trailing: IconButton(
-                onPressed: () => notifier.deleteTodo(todo),
-                icon: const Icon(Icons.close),
-              ),
+                return ListTile(
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (context) => UpsertTodoDialog(
+                      title: 'Edit Todo',
+                      submitButtonText: 'Save',
+                      initialTodo: todo,
+                      onSubmit: (title, description) {
+                        notifier.editTodo(todo, title, description);
+                      },
+                    ),
+                  ),
+                  title: Text(todo.title),
+                  subtitle: Text(todo.description),
+                  leading: Checkbox(
+                    value: todo.isDone,
+                    onChanged: (value) => notifier.updateTodo(todo),
+                  ),
+                  trailing: IconButton(
+                    onPressed: () => notifier.deleteTodo(todo),
+                    icon: const Icon(Icons.close),
+                  ),
+                );
+              },
             );
           },
+          error: (error, stackTrace) => Center(child: Text('Error: $error')),
+          loading: () => const Center(child: CircularProgressIndicator()),
         ),
       ),
       floatingActionButton: FloatingActionButton(

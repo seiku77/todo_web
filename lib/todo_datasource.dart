@@ -24,7 +24,7 @@ class TodoDataSource {
     await todo.save();
   }
 
-  List<Todo>? getAllTodo() {
+  Future<List<Todo>> getAllTodo() async {
     return _todoBox.values.toList();
   }
 }
